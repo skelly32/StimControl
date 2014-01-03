@@ -1,0 +1,55 @@
+﻿<Window x:Class="PiezoControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="xPC Target Control GUI" Height="647" Width="790" ResizeMode="NoResize">
+    <Grid Margin="0,0,4,0">
+        <GroupBox Header="Communication Settings" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top" Width="350" Height="162">
+            <GroupBox Header="TCP-IP Settings&#xD;&#xA;" HorizontalAlignment="Left" Height="140" VerticalAlignment="Top" Width="203">
+                <TextBox x:Name="ipTB" HorizontalAlignment="Left" Height="23" Margin="42,10,0,0" TextWrapping="Wrap" Text="192.168.10.11" VerticalAlignment="Top" Width="100"/>
+            </GroupBox>
+        </GroupBox>
+        <Button x:Name="connectBTN" Content="Connect" HorizontalAlignment="Left" Margin="250,48,0,0" VerticalAlignment="Top" Width="75" Click="connectBTN_Click"/>
+        <Button x:Name="dcBTN" Content="Disconnect" HorizontalAlignment="Left" Margin="250,112,0,0" VerticalAlignment="Top" Width="75" Click="dcBTN_Click"/>
+        <TextBox x:Name="portTB" HorizontalAlignment="Left" Height="23" Margin="65,127,0,0" TextWrapping="Wrap" Text="22222&#xD;&#xA;" VerticalAlignment="Top" Width="100"/>
+        <GroupBox Header="Application" HorizontalAlignment="Left" Margin="416,11,0,0" VerticalAlignment="Top" Width="340" Height="162">
+            <TextBox x:Name="mnameTB" HorizontalAlignment="Left" Height="23" Margin="92,23,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="238"/>
+        </GroupBox>
+        <Button x:Name="origBTN" Content="Piezo" HorizontalAlignment="Left" Margin="443,90,0,0" VerticalAlignment="Top" Width="75" Click="origBTN_Click"/>
+        <Button x:Name="galvoBTN" Content="Galvo" HorizontalAlignment="Left" Margin="550,90,0,0" VerticalAlignment="Top" Width="75" Click="galvoBTN_Click"/>
+        <Button x:Name="estimBTN" Content="EStim" HorizontalAlignment="Left" Margin="655,90,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="unloadBTN" Content="Unload" HorizontalAlignment="Left" Margin="443,130,0,0" VerticalAlignment="Top" Width="75" Click="unloadBTN_Click"/>
+        <Button x:Name="startBTN" Content="Start" HorizontalAlignment="Left" Margin="550,130,0,0" VerticalAlignment="Top" Width="75" Click="startBTN_Click"/>
+        <Button x:Name="stopBTN" Content="Stop" HorizontalAlignment="Left" Margin="655,130,0,0" VerticalAlignment="Top" Width="75" Click="stopBTN_Click"/>
+        <Label Content="Model Name" HorizontalAlignment="Left" Margin="427,48,0,0" VerticalAlignment="Top"/>
+        <Label Content="IP Address:" HorizontalAlignment="Left" Margin="65,44,0,0" VerticalAlignment="Top"/>
+        <Label Content="Port:" HorizontalAlignment="Left" Margin="65,101,0,0" VerticalAlignment="Top"/>
+        <GroupBox Header="Mechanical Stimulator" HorizontalAlignment="Left" Margin="10,176,0,0" VerticalAlignment="Top" Width="751" Height="397"/>
+        <CheckBox x:Name="onoffCB" Content="On/Off" HorizontalAlignment="Left" Margin="32,207,0,0" VerticalAlignment="Top" Checked="onoffCB_CheckedChanged"/>
+        <ComboBox x:Name="folderDB" HorizontalAlignment="Left" Margin="121,236,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="trig" HorizontalAlignment="Left" Margin="121,274,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="shutter" HorizontalAlignment="Left" Margin="121,310,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="dio1" HorizontalAlignment="Left" Margin="121,348,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="dio2" HorizontalAlignment="Left" Margin="121,383,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="dio3" HorizontalAlignment="Left" Margin="121,421,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="dio4" HorizontalAlignment="Left" Margin="121,457,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="dio5" HorizontalAlignment="Left" Margin="121,495,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="dio6" HorizontalAlignment="Left" Margin="121,534,0,0" VerticalAlignment="Top" Width="204"/>
+        <TextBox x:Name="trialduration" HorizontalAlignment="Left" Height="23" Margin="260,200,0,0" TextWrapping="Wrap" Text="1000" VerticalAlignment="Top" Width="65"/>
+        <Label x:Name="trialduration1" Content="Trial Duration (ms):" HorizontalAlignment="Left" Margin="149,198,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="A0" HorizontalAlignment="Left" Margin="452,236,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="A1" HorizontalAlignment="Left" Margin="452,274,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="A2" HorizontalAlignment="Left" Margin="452,310,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="A3" HorizontalAlignment="Left" Margin="452,348,0,0" VerticalAlignment="Top" Width="204"/>
+        <Button x:Name="kernelBTN" Content="Upload" HorizontalAlignment="Left" Margin="669,236,0,0" VerticalAlignment="Top" Width="75" Height="96" Click="kernelBTN_Click"/>
+        <Label Content="Folder Src" HorizontalAlignment="Left" Margin="47,236,0,0" VerticalAlignment="Top"/>
+        <Label Content="DIO 0/Trigger&#xA;" HorizontalAlignment="Left" Margin="29,274,0,0" VerticalAlignment="Top" Height="31"/>
+        <Label Content="DIO 1/Shutter" HorizontalAlignment="Left" Margin="31,310,0,0" VerticalAlignment="Top"/>
+        <Label Content="DIO 2-7" HorizontalAlignment="Left" Margin="59,348,0,0" VerticalAlignment="Top" Height="29" Width="57"/>
+        <Label Content="A0:" HorizontalAlignment="Left" Margin="409,236,0,0" VerticalAlignment="Top"/>
+        <Label Content="A1:" HorizontalAlignment="Left" Margin="409,271,0,0" VerticalAlignment="Top"/>
+        <Label Content="A2:" HorizontalAlignment="Left" Margin="409,306,0,0" VerticalAlignment="Top"/>
+        <Label Content="A3:" HorizontalAlignment="Left" Margin="409,344,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="trialnum" Content="0" HorizontalAlignment="Left" Margin="506,417,0,0" VerticalAlignment="Top" Height="100" Width="224" FontSize="72"/>
+
+    </Grid>
+</Window>

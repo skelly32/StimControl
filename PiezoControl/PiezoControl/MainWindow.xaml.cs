@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MathWorks.xPCTarget.FrameWork;
 using Microsoft.Win32;
 using System.Windows.Threading;
+using System.Threading;
 
 
 namespace PiezoControl
@@ -27,17 +28,17 @@ namespace PiezoControl
     public partial class MainWindow : Window
     {
         xPCTargetPC tar_pc = new xPCTargetPC();
-        DispatcherTimer trialtimer = new System.Windows.Threading.DispatcherTimer();
+        //DispatcherTimer trialtimer = new System.Windows.Threading.DispatcherTimer();
         int drivertype = 0;
         
         public MainWindow()
         {
             InitializeComponent();
-            trialtimer.IsEnabled = false;
-            trialtimer.Tick += new EventHandler(trialtimer_Tick);
-            trialtimer.Interval = new TimeSpan(0, 0, 1);
-            folderDB.SelectionChanged += new SelectionChangedEventHandler(folderDB_Change);
-            trialduration.IsEnabled = false;
+            //trialtimer.IsEnabled = false;
+            //trialtimer.Tick += new EventHandler(trialtimer_Tick);
+            //trialtimer.Interval = new TimeSpan(0, 0, 1);
+            ////folderDB.SelectionChanged += new SelectionChangedEventHandler(folderDB_Change);
+            //trialduration.IsEnabled = false;
 
             //Create and populate an initial listing of folders containing experiment file sets
             List<string> foldernames = new List<string>();
@@ -50,7 +51,7 @@ namespace PiezoControl
             folderDB.SelectedIndex = 0;
         }
 
-        public void folderDB_Change(object sender, SelectionChangedEventArgs e)
+        public void folderDB_closed(object sender, EventArgs e)
         {
             //Pre-clear the existing populated lists and then repopulate the blank items for High (5V) and Low (0V)
             A0.Items.Clear();
@@ -135,15 +136,15 @@ namespace PiezoControl
             tar_pc.TcpIpTargetAddress = ipTB.Text;
             tar_pc.TcpIpTargetPort = portTB.Text;
 
-            //try
-            //{
-            //    tar_pc.Connect();
-            //}
-            //catch (Exception xpcerr)
-            //{
-            //    string errmsg = xpcerr.ToString();
-            //    MessageBox.Show(errmsg, "CONN Error", MessageBoxButton.OK);
-            //}
+            try
+            {
+                tar_pc.Connect();
+            }
+            catch (Exception xpcerr)
+            {
+                string errmsg = xpcerr.ToString();
+                MessageBox.Show(errmsg, "CONN Error", MessageBoxButton.OK);
+            }
             connectBTN.IsEnabled = false;
             dcBTN.IsEnabled = true;
             origBTN.IsEnabled = true;
@@ -178,7 +179,7 @@ namespace PiezoControl
             }
 
             //Load Shutter Protocol Files
-            filesindir = System.IO.Directory.GetFiles(System.IO.Path.GetFullPath(@".\ShutProtocols"));
+            filesindir = System.IO.Directory.GetFiles(System.IO.Path.GetFullPath(@".\DIOProtocols"));
 
             foreach (string file in filesindir)
             {
@@ -218,31 +219,31 @@ namespace PiezoControl
         private void stopBTN_Click(object sender, RoutedEventArgs e)
         {
             //Stop timer first so there is no race condition where app stops right before timer ticks
-            trialtimer.Stop();
+            //trialtimer.Stop();
             tar_pc.Application.Stop();
             //'Since the application has started, disable the Start button and enable the Stop button
             startBTN.IsEnabled = true;
             stopBTN.IsEnabled = false;
-            trialtimer.IsEnabled = false;
+            //trialtimer.IsEnabled = false;
             kernelBTN.IsEnabled = true;
             unloadBTN.IsEnabled = true;
             onoffCB.IsEnabled = false;
         }
 
-        public void trialtimer_Tick(object sender, EventArgs e)
-        {
-            IList<xPCSignal> trial_sig;
-            IList<double> trial_value;
-            string[] signal_name = new string[1];
-            signal_name[0] = "trialnum";
+        //public void trialtimer_Tick(object sender, EventArgs e)
+        //{
+        //    IList<xPCSignal> trial_sig;
+        //    IList<double> trial_value;
+        //    string[] signal_name = new string[1];
+        //    signal_name[0] = "trialnum";
 
-            trial_sig = tar_pc.Application.Signals.GetSignals(signal_name);
-            trial_value = tar_pc.Application.Signals.GetSignalsValue(trial_sig);
+        //    trial_sig = tar_pc.Application.Signals.GetSignals(signal_name);
+        //    trial_value = tar_pc.Application.Signals.GetSignalsValue(trial_sig);
 
-            //'TrialCount = TrialCount + 1
+        //    //'TrialCount = TrialCount + 1
 
-            trialnum.Content = trial_value;
-        }
+        //    trialnum.Content = trial_value;
+        //}
 
         private void startBTN_Click(object sender, RoutedEventArgs e)
         {
@@ -251,7 +252,7 @@ namespace PiezoControl
             //'Since we start the application we disable the start button, enable stop.
             startBTN.IsEnabled = false;
             stopBTN.IsEnabled = true;
-            trialtimer.IsEnabled = true;
+            //trialtimer.IsEnabled = true;
             kernelBTN.IsEnabled = false;
             unloadBTN.IsEnabled = false;
             if (mnameTB.Text == "mstimulator_trigger") { }
@@ -259,7 +260,8 @@ namespace PiezoControl
                 onoffCB.IsEnabled = true;
             }
             //Start timer after being relatively sure the application has started
-            trialtimer.Start();
+            //Thread.Sleep(5000);
+            //trialtimer.Start();
         }
 
         private void unloadBTN_Click(object sender, RoutedEventArgs e)
@@ -272,11 +274,11 @@ namespace PiezoControl
             galvoBTN.IsEnabled = true;
             estimBTN.IsEnabled = true;
             unloadBTN.IsEnabled = false;
-            if (trialtimer.IsEnabled)
-            {
-                trialtimer.Stop();
-            }
-            trialtimer.IsEnabled = false;
+            //if (trialtimer.IsEnabled)
+            //{
+            //    trialtimer.Stop();
+            //}
+            //trialtimer.IsEnabled = false;
             dcBTN.IsEnabled = true;
             onoffCB.IsEnabled = false;
             kernelBTN.IsEnabled = false;
@@ -290,11 +292,11 @@ namespace PiezoControl
             //'Enable components required to Reconnect to Target
             connectBTN.IsEnabled = true;
             //'Disable all the components required when not connected to the target PC.
-            if (trialtimer.IsEnabled)
-            {
-                trialtimer.Stop();
-            }
-            trialtimer.IsEnabled = false;
+            //if (trialtimer.IsEnabled)
+            //{
+            //    trialtimer.Stop();
+            //}
+            //trialtimer.IsEnabled = false;
             dcBTN.IsEnabled = false;
             startBTN.IsEnabled = false;
             stopBTN.IsEnabled = false;
@@ -342,20 +344,50 @@ namespace PiezoControl
                 mstim_switch_index.Value = mstim_value;
             }
 
-            trialtimer.IsEnabled = true;
+            //trialtimer.IsEnabled = true;
         }
 
         private void kernelBTN_Click(object sender, RoutedEventArgs e)
         {
-            List<string> expfiles = new List<string> {@".\StimProtocols\" + A0.Text + ".txt", @".\StimProtocols\" + A1.Text + ".txt", @".\StimProtocols\" + A2.Text + ".txt",
-                @".\StimProtocols\" + A3.Text + ".txt", @".\TrigProtocols\" + trig.Text + ".txt", @".\ShutProtocols\" + shutter.Text + ".txt", @".\DigiProtocols\" + dio1.Text + ".txt"};
+            string current_folder = folderDB.SelectedValue.ToString();
+            List<string> expfiles = new List<string> {};
+            if (current_folder != "No Folder")
+            {
+                expfiles.Add(@".\StimProtocols\" + @"\" + current_folder + @"\" + A0.Text + ".txt");
+                expfiles.Add(@".\StimProtocols\" + @"\" + current_folder + @"\" + A1.Text + ".txt");
+                expfiles.Add(@".\StimProtocols\" + @"\" + current_folder + @"\" + A2.Text + ".txt");
+                expfiles.Add(@".\StimProtocols\" + @"\" + current_folder + @"\" + A3.Text + ".txt"); 
+                expfiles.Add(@".\TrigProtocols\" + @"\" + current_folder + @"\" + trig.Text + ".txt"); 
+                expfiles.Add(@".\DIOProtocols\" + @"\" + current_folder + @"\" + shutter.Text + ".txt"); 
+                expfiles.Add(@".\DIOProtocols\" + @"\" + current_folder + @"\" + dio1.Text + ".txt"); 
+                expfiles.Add(@".\DIOProtocols\" + @"\" + current_folder + @"\" + dio2.Text + ".txt");
+                expfiles.Add(@".\DIOProtocols\" + @"\" + current_folder + @"\" + dio3.Text + ".txt"); 
+                expfiles.Add(@".\DIOProtocols\" + @"\" + current_folder + @"\" + dio4.Text + ".txt");
+                expfiles.Add(@".\DIOProtocols\" + @"\" + current_folder + @"\" + dio5.Text + ".txt"); 
+                expfiles.Add(@".\DIOProtocols\" + @"\" + current_folder + @"\" + dio6.Text + ".txt");
+            }
+            else
+            {
+                expfiles.Add(@".\StimProtocols\" + A0.Text + ".txt"); 
+                expfiles.Add(@".\StimProtocols\" + A1.Text + ".txt"); 
+                expfiles.Add(@".\StimProtocols\" + A2.Text + ".txt");
+                expfiles.Add(@".\StimProtocols\" + A3.Text + ".txt"); 
+                expfiles.Add(@".\TrigProtocols\" + trig.Text + ".txt"); 
+                expfiles.Add(@".\DIOProtocols\" + shutter.Text + ".txt"); 
+                expfiles.Add(@".\DIOProtocols\" + dio1.Text + ".txt");
+                expfiles.Add(@".\DIOProtocols\" + dio2.Text + ".txt");
+                expfiles.Add(@".\DIOProtocols\" + dio3.Text + ".txt");
+                expfiles.Add(@".\DIOProtocols\" + dio4.Text + ".txt");
+                expfiles.Add(@".\DIOProtocols\" + dio5.Text + ".txt");
+                expfiles.Add(@".\DIOProtocols\" + dio6.Text + ".txt");
+            }
 
-            List<string> subsystems = new List<string> {"Subsystem/kernel1", "Subsystem/kernel2", "Subsystem/kernel3", "Subsystem/kernel4", "Subsystem/trigger", "Subsystem/shutter",
+            List<string> subsystems = new List<string> {"Subsystem/kernel1", "Subsystem/kernel2", "Subsystem/kernel3", "Subsystem/kernel4", "Subsystem/D1", "Subsystem/D2",
                 "Subsystem/D3", "Subsystem/D4", "Subsystem/D5", "Subsystem/D6", "Subsystem/D7", "Subsystem/D8"}; 
 
             if (tar_pc.IsConnected)
             {
-                for (int i = 0; i <= subsystems.Count; i++)
+                for (int i = 0; i < subsystems.Count; i++)
                 {
                     double IC = 0;
                     // Reset the initial condition if we are in Piezo mode AND setting A0 or A1

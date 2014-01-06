@@ -25,7 +25,7 @@
         <Label Content="Port:" HorizontalAlignment="Left" Margin="65,101,0,0" VerticalAlignment="Top"/>
         <GroupBox Header="Mechanical Stimulator" HorizontalAlignment="Left" Margin="10,176,0,0" VerticalAlignment="Top" Width="751" Height="397"/>
         <CheckBox x:Name="onoffCB" Content="On/Off" HorizontalAlignment="Left" Margin="32,207,0,0" VerticalAlignment="Top" Checked="onoffCB_CheckedChanged"/>
-        <ComboBox x:Name="folderDB" HorizontalAlignment="Left" Margin="121,236,0,0" VerticalAlignment="Top" Width="204"/>
+        <ComboBox x:Name="folderDB" HorizontalAlignment="Left" Margin="121,236,0,0" VerticalAlignment="Top" Width="204" DropDownClosed="folderDB_closed"/>
         <ComboBox x:Name="trig" HorizontalAlignment="Left" Margin="121,274,0,0" VerticalAlignment="Top" Width="204"/>
         <ComboBox x:Name="shutter" HorizontalAlignment="Left" Margin="121,310,0,0" VerticalAlignment="Top" Width="204"/>
         <ComboBox x:Name="dio1" HorizontalAlignment="Left" Margin="121,348,0,0" VerticalAlignment="Top" Width="204"/>

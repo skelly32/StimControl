@@ -16,6 +16,7 @@ using MathWorks.xPCTarget.FrameWork;
 using Microsoft.Win32;
 using System.Windows.Threading;
 using System.Threading;
+using System.Diagnostics;
 
 
 namespace PiezoControl
@@ -28,17 +29,20 @@ namespace PiezoControl
     public partial class MainWindow : Window
     {
         xPCTargetPC tar_pc = new xPCTargetPC();
-        //DispatcherTimer trialtimer = new System.Windows.Threading.DispatcherTimer();
+        DispatcherTimer trialtimer = new System.Windows.Threading.DispatcherTimer();
+        Stopwatch stopwatch = new Stopwatch();
+        int trialnumber;
+        int secondselapsed;
         int drivertype = 0;
         
         public MainWindow()
         {
             InitializeComponent();
-            //trialtimer.IsEnabled = false;
-            //trialtimer.Tick += new EventHandler(trialtimer_Tick);
-            //trialtimer.Interval = new TimeSpan(0, 0, 1);
-            ////folderDB.SelectionChanged += new SelectionChangedEventHandler(folderDB_Change);
-            //trialduration.IsEnabled = false;
+            trialtimer.IsEnabled = false;
+            trialtimer.Tick += new EventHandler(trialtimer_Tick);
+            trialtimer.Interval = TimeSpan.FromSeconds(.1);
+            //folderDB.SelectionChanged += new SelectionChangedEventHandler(folderDB_Change);
+            trialduration.IsEnabled = false;
 
             //Create and populate an initial listing of folders containing experiment file sets
             List<string> foldernames = new List<string>();
@@ -212,56 +216,80 @@ namespace PiezoControl
             shutter.IsEnabled = true;
 
             populateAllFiles();
-
+            
             mnameTB.Text = tar_pc.Application.Name;
         }
 
         private void stopBTN_Click(object sender, RoutedEventArgs e)
         {
             //Stop timer first so there is no race condition where app stops right before timer ticks
-            //trialtimer.Stop();
+            trialtimer.Stop();
             tar_pc.Application.Stop();
+            stopwatch.Start();
+            stopwatch.Reset();
             //'Since the application has started, disable the Start button and enable the Stop button
             startBTN.IsEnabled = true;
             stopBTN.IsEnabled = false;
-            //trialtimer.IsEnabled = false;
+            trialtimer.IsEnabled = false;
             kernelBTN.IsEnabled = true;
             unloadBTN.IsEnabled = true;
             onoffCB.IsEnabled = false;
         }
 
-        //public void trialtimer_Tick(object sender, EventArgs e)
-        //{
-        //    IList<xPCSignal> trial_sig;
-        //    IList<double> trial_value;
-        //    string[] signal_name = new string[1];
-        //    signal_name[0] = "trialnum";
+        public void trialtimer_Tick(object sender, EventArgs e)
+        {
+            IList<double> trial_value = new List<double>{0};
+            //try
+            //{
+            //    IList<xPCSignal> trial_sig;
+                
+            //    string[] signal_name = new string[1];
+            //    signal_name[0] = "Memory1";
 
-        //    trial_sig = tar_pc.Application.Signals.GetSignals(signal_name);
-        //    trial_value = tar_pc.Application.Signals.GetSignalsValue(trial_sig);
+            //    trial_sig = tar_pc.Application.Signals.GetSignals(signal_name);
+            //    trial_value = tar_pc.Application.Signals.GetSignalsValue(trial_sig);
+                               
+            //}
+            //catch (xPCException err)
+            //{
+                //if (secondselapsed + 1 > Convert.ToInt32(Convert.ToDouble(trialduration.Text) / 1000))
+                //{
+                //    trialnumber = trialnumber + 1;
+                //    secondselapsed = 0;
+                //}
+                //else
+                //{
+                //    secondselapsed = secondselapsed + 1;
+                //}
+                trial_value[0] = Math.Floor(Convert.ToDouble(stopwatch.ElapsedMilliseconds)/Convert.ToDouble(trialduration.Text));
+            //}
+            //'TrialCount = TrialCount + 1
 
-        //    //'TrialCount = TrialCount + 1
-
-        //    trialnum.Content = trial_value;
-        //}
+            trialnum.Content = trial_value[0].ToString();
+        }
 
         private void startBTN_Click(object sender, RoutedEventArgs e)
         {
             //'Here we start the application. 
+            trialnumber = 0;
+            secondselapsed = 0;
             tar_pc.Application.Start();
+            stopwatch.Start();
+            trialnum.Content = @"0";
             //'Since we start the application we disable the start button, enable stop.
             startBTN.IsEnabled = false;
             stopBTN.IsEnabled = true;
-            //trialtimer.IsEnabled = true;
+            trialtimer.IsEnabled = true;
             kernelBTN.IsEnabled = false;
             unloadBTN.IsEnabled = false;
-            if (mnameTB.Text == "mstimulator_trigger") { }
-            else{
-                onoffCB.IsEnabled = true;
-            }
+            //if (mnameTB.Text == "mstimulator_trigger") { }
+            //else{
+            //    onoffCB.IsEnabled = true;
+            //}
             //Start timer after being relatively sure the application has started
             //Thread.Sleep(5000);
-            //trialtimer.Start();
+
+            trialtimer.Start();
         }
 
         private void unloadBTN_Click(object sender, RoutedEventArgs e)
@@ -274,11 +302,11 @@ namespace PiezoControl
             galvoBTN.IsEnabled = true;
             estimBTN.IsEnabled = true;
             unloadBTN.IsEnabled = false;
-            //if (trialtimer.IsEnabled)
-            //{
-            //    trialtimer.Stop();
-            //}
-            //trialtimer.IsEnabled = false;
+            if (trialtimer.IsEnabled)
+            {
+                trialtimer.Stop();
+            }
+            trialtimer.IsEnabled = false;
             dcBTN.IsEnabled = true;
             onoffCB.IsEnabled = false;
             kernelBTN.IsEnabled = false;
@@ -292,11 +320,11 @@ namespace PiezoControl
             //'Enable components required to Reconnect to Target
             connectBTN.IsEnabled = true;
             //'Disable all the components required when not connected to the target PC.
-            //if (trialtimer.IsEnabled)
-            //{
-            //    trialtimer.Stop();
-            //}
-            //trialtimer.IsEnabled = false;
+            if (trialtimer.IsEnabled)
+            {
+                trialtimer.Stop();
+            }
+            trialtimer.IsEnabled = false;
             dcBTN.IsEnabled = false;
             startBTN.IsEnabled = false;
             stopBTN.IsEnabled = false;
@@ -400,7 +428,7 @@ namespace PiezoControl
                         threshold_index.Value = threshold_value;
                         trialduration.Text = file_length.ToString();
                     }
-                }               
+                }
             }
             else
             {
